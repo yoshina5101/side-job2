@@ -1,0 +1,21 @@
+title: AIツール・ガジェットラボ
+description: 最新のAIツール・ガジェットをわかりやすくレビュー・比較するブログ
+lang: ja
+timezone: Asia/Tokyo
+url: ""
+baseurl: ""
+
+theme: minima
+permalink: /:year/:month/:day/:title/
+
+# minimaテーマの設定
+minima:
+  date_format: "%Y年%m月%d日"
+
+# ビルド対象から除外するファイル
+exclude:
+  - scripts/
+  - config/
+  - requirements.txt
+  - README.md
+  - .github/
