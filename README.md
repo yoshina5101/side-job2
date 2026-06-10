@@ -92,6 +92,36 @@ export ANTHROPIC_API_KEY=sk-ant-...
 python scripts/generate_post.py
 ```
 
+## SEO(検索エンジン対策)
+
+技術的なSEO設定は組み込み済みです。
+
+| 項目 | 状態 |
+|---|---|
+| meta description / OGP / 構造化データ(JSON-LD) | ✅ 自動出力(jekyll-seo-tag) |
+| sitemap.xml | ✅ 自動生成(jekyll-sitemap) |
+| RSSフィード(feed.xml) | ✅ 自動生成(jekyll-feed) |
+| robots.txt | ✅ 設置済み |
+| 記事タイトル・見出しへのキーワード配置 | ✅ 生成プロンプトで自動対応 |
+| Google Search Console への登録 | ⚠️ **手動(下記参照)** |
+
+### Google Search Console への登録(公開後に必ずやる)
+
+検索結果に載るスピードが大きく変わるので、サイト公開後に必ず行ってください。
+
+1. [Google Search Console](https://search.google.com/search-console) にアクセスし、「URLプレフィックス」でサイトURL(`https://yoshina5101.github.io/side-job2/`)を登録
+2. 所有権の確認は「HTMLタグ」方式を選び、表示されたメタタグの `content` の値をコピー
+3. `_config.yml` に次の1行を追加してコミット(jekyll-seo-tagが自動でタグを出力します)
+   ```yaml
+   google_site_verification: "コピーした値"
+   ```
+4. 確認が済んだら、Search Console の「サイトマップ」に `sitemap.xml` を送信
+
+### 知っておいてほしいこと
+
+- **独自ドメインの検討**: `xxx.github.io` のままでも運用できますが、長期的に育てるなら独自ドメイン(年1,500円程度)の方がSEO上の資産になります。導入する場合は `_config.yml` の `url` を変更してください。
+- **AI生成コンテンツについて**: Googleは「AI生成かどうか」ではなく「読者に役立つか」で評価すると公表しています。本システムのプロンプトは検索意図への回答を重視した構成にしていますが、ときどき記事を読んで、間違いに気づいたら直す(または好調なテーマにトピックを寄せる)運用が検索評価を伸ばす近道です。
+
 ## 法律・税金に関する注意
 
 - **ステマ規制(景品表示法)**: アフィリエイトリンクを含む記事には広告である旨の表記が義務付けられています。本システムは全記事の冒頭に「※本記事はアフィリエイト広告(PR)を含みます。」を自動挿入することで対応しています。

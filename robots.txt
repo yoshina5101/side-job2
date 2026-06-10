@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yoshina5101.github.io/side-job2/sitemap.xml

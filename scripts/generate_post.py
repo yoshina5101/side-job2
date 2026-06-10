@@ -33,9 +33,9 @@ PR_NOTICE = "※本記事はアフィリエイト広告(PR)を含みます。"
 ARTICLE_SCHEMA = {
     "type": "object",
     "properties": {
-        "title": {"type": "string", "description": "記事タイトル(32文字前後、検索されやすい言葉を含める)"},
-        "slug": {"type": "string", "description": "URL用スラッグ。英小文字・数字・ハイフンのみ(例: ai-chat-comparison)"},
-        "description": {"type": "string", "description": "記事の概要(100文字以内)"},
+        "title": {"type": "string", "description": "記事タイトル(28〜35文字。狙う検索キーワードを先頭寄りに含める)"},
+        "slug": {"type": "string", "description": "URL用スラッグ。英小文字・数字・ハイフンのみ、内容を表す英単語2〜4語(例: ai-chat-comparison)"},
+        "description": {"type": "string", "description": "meta description用の概要(80〜110文字。検索キーワードを含め、クリックしたくなる文にする)"},
         "tags": {"type": "array", "items": {"type": "string"}, "description": "記事タグ(2〜4個、日本語)"},
         "body": {"type": "string", "description": "Markdown形式の記事本文。タイトル(h1)は含めず、## 見出しから始める"},
     },
@@ -91,6 +91,13 @@ def build_article_prompt(topic: str, settings: dict, titles: list[str]) -> str:
 - 読者が具体的な行動(ツールを試す・商品を検討する)に移れる実用的な内容にする。
 - 正確性に自信のない具体的な価格・数値は断定せず、「公式サイトで最新情報を確認してください」と促す。
 - 記事の最後に「まとめ」セクションを置く。
+
+# SEOの指示
+- このトピックで検索する人が使いそうなキーワードを1つ想定し、タイトル・最初の見出し・本文の冒頭段落に自然に含める。
+- 冒頭の1〜2段落で「この記事を読むと何がわかるか」を明示し、検索意図(知りたいこと)に最初に答える。
+- 見出しは ## と ### の階層を守り、見出しだけ読んでも記事の流れがわかるようにする。
+- 読者が次に検索しそうな疑問(例:「〜は無料で使える?」)を1つ以上、見出しまたはQ&A形式で先回りして解消する。
+- キーワードの不自然な詰め込みはしない。あくまで読者にとって自然な日本語を最優先する。
 
 # アフィリエイトリンクの挿入
 商品やサービスを紹介する自然な箇所(1〜3箇所)に、次の形式のプレースホルダを単独行で挿入してください:

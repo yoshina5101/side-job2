@@ -2,11 +2,23 @@ title: AIツール・ガジェットラボ
 description: 最新のAIツール・ガジェットをわかりやすくレビュー・比較するブログ
 lang: ja
 timezone: Asia/Tokyo
-url: ""
-baseurl: ""
+
+# 公開URL(サイトマップ・canonical URL・OGPタグの生成に使われます)
+# 独自ドメインを設定した場合はここを書き換えてください。
+url: "https://yoshina5101.github.io"
+baseurl: "/side-job2"
 
 theme: minima
 permalink: /:year/:month/:day/:title/
+
+# SEO関連プラグイン(GitHub Pages公式サポート)
+#   jekyll-seo-tag : meta description / OGP / Twitterカード / JSON-LD構造化データを自動出力
+#   jekyll-sitemap : sitemap.xml を自動生成(Google Search Console に登録する)
+#   jekyll-feed    : RSSフィード(feed.xml)を自動生成
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
 
 # minimaテーマの設定
 minima:
