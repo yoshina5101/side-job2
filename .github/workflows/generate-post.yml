@@ -38,5 +38,7 @@ jobs:
             echo "変更がないためコミットをスキップします"
           else
             git commit -m "記事を自動投稿: $(date +'%Y-%m-%d')"
+            # 実行中にリモートが更新されていてもpushが失敗しないよう取り込む
+            git pull --rebase origin "${GITHUB_REF_NAME}"
             git push
           fi
