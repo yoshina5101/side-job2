@@ -370,14 +370,25 @@ def main() -> int:
 
     client = anthropic.Anthropic()
 
+    # 二重実行ガード: 遅延したcronと手動実行が重なっても、その日の本数を超えて投稿しない
+    today_str = datetime.datetime.now(JST).date().isoformat()
+    posted_today = len(list(POSTS_DIR.glob(f"{today_str}-*.md"))) if POSTS_DIR.exists() else 0
+    remaining = posts_per_day - posted_today
+    if remaining <= 0:
+        print(f"本日分({posts_per_day}本)は投稿済みのためスキップします。")
+        return 0
+    if posted_today > 0:
+        print(f"本日すでに{posted_today}本投稿済みのため、残り{remaining}本を生成します。")
+
     news_cfg = settings.get("news") or {}
     is_news_day = (
         news_cfg.get("enabled")
         and datetime.datetime.now(JST).weekday() == int(news_cfg.get("weekday", 0))
+        and posted_today == 0  # その日の最初の実行のみニュース記事を生成
     )
 
-    for i in range(posts_per_day):
-        print(f"--- {i + 1}/{posts_per_day} 本目 ---")
+    for i in range(remaining):
+        print(f"--- {i + 1}/{remaining} 本目 ---")
 
         # ニュース解説の日は1本目をWeb検索付きのニュース記事にする
         if i == 0 and is_news_day:
