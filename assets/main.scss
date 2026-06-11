@@ -1,0 +1,248 @@
+---
+---
+
+@import "minima";
+
+/* ===== デザインカスタマイズ(minimaの上書き) ===== */
+
+:root {
+  --accent: #0a7e8c;
+  --accent-soft: #e3f2f4;
+  --text: #21272a;
+  --text-sub: #5b6770;
+  --bg: #f7f8f9;
+  --card-bg: #ffffff;
+  --border: #e4e8ea;
+}
+
+body {
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+
+/* ヘッダー */
+.site-header {
+  background: var(--card-bg);
+  border-top: 4px solid var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-title, .site-title:visited {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.site-title::before {
+  content: "▲";
+  color: var(--accent);
+  font-size: 0.7em;
+  margin-right: 6px;
+  vertical-align: 2px;
+}
+
+.site-nav .page-link {
+  color: var(--text-sub);
+  font-weight: 500;
+}
+
+/* トップページ:ヒーロー */
+.site-hero {
+  text-align: center;
+  padding: 36px 16px 28px;
+  margin-bottom: 28px;
+  background: linear-gradient(180deg, var(--accent-soft), transparent);
+  border-radius: 12px;
+}
+
+.site-hero h1 {
+  font-size: 1.6em;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.site-hero p {
+  color: var(--text-sub);
+  font-size: 0.95em;
+  margin-bottom: 0;
+}
+
+/* トップページ:記事カード */
+.card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media screen and (max-width: 640px) {
+  .card-list { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 20px rgba(10, 126, 140, 0.12);
+  transform: translateY(-2px);
+}
+
+.card__link, .card__link:visited {
+  display: block;
+  padding: 20px 22px;
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.card__link:hover { text-decoration: none; }
+
+.card__date {
+  font-size: 0.78em;
+  color: var(--text-sub);
+}
+
+.card__title {
+  font-size: 1.05em;
+  font-weight: 700;
+  line-height: 1.6;
+  margin: 6px 0 8px;
+  color: var(--text);
+}
+
+.card__link:hover .card__title { color: var(--accent); }
+
+.card__desc {
+  font-size: 0.85em;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* タグ */
+.tag {
+  display: inline-block;
+  font-size: 0.72em;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 10px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+
+/* 記事ページ */
+.post {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 36px;
+}
+
+@media screen and (max-width: 640px) {
+  .post { padding: 22px 18px; }
+}
+
+.post-title {
+  font-size: 1.65em;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+.post-meta { color: var(--text-sub); }
+
+.post-tags { margin-left: 10px; }
+
+.post-content h2 {
+  font-size: 1.3em;
+  font-weight: 700;
+  margin-top: 2em;
+  padding: 0.4em 0 0.4em 0.7em;
+  border-left: 5px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 6px 6px 0;
+}
+
+.post-content h3 {
+  font-size: 1.1em;
+  font-weight: 700;
+  margin-top: 1.6em;
+  padding-bottom: 0.3em;
+  border-bottom: 2px solid var(--border);
+}
+
+/* PR表記(記事冒頭の1段落目) */
+.post-content > p:first-child {
+  font-size: 0.8em;
+  color: var(--text-sub);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: inline-block;
+}
+
+/* テーブル */
+.post-content table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9em;
+  display: block;
+  overflow-x: auto;
+}
+
+.post-content th {
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  padding: 8px 12px;
+}
+
+.post-content td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  background: var(--card-bg);
+}
+
+.post-content tr:nth-child(even) td { background: var(--bg); }
+
+/* アフィリエイトリンク(👉で始まる段落)をボタン風に */
+.post-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 図解(Mermaid) */
+.mermaid {
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 1.5em 0;
+  overflow-x: auto;
+}
+
+/* フッター */
+.site-footer {
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  color: var(--text-sub);
+}

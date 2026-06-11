@@ -99,6 +99,9 @@
 | 文体・文字数を変える | `config/settings.yml` の `article` |
 | 投稿頻度を変える | `.github/workflows/generate-post.yml` の `cron`(例: 週3回なら `0 22 * * 1,3,5`) |
 | サイト名・説明を変える | `_config.yml` |
+| デザイン(色・フォント・カード)を調整する | `assets/main.scss`(色は冒頭の `--accent` などの変数) |
+
+記事内の図解は [Mermaid](https://mermaid.js.org/) 記法で自動挿入されます(AIが記事ごとに必要と判断した場合)。表示はブラウザ側でレンダリングされるため、追加コストはかかりません。
 
 トピックは残り5本を切ると、Claudeが既存記事と重複しない新トピックを自動で補充するので、基本的に放置で大丈夫です。
 
