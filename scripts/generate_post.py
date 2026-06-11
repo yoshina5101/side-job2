@@ -221,16 +221,9 @@ def refill_topics_if_needed(client, model: str, settings: dict, topics: dict, ti
     print(f"{len(new_topics)}本のトピックを補充しました。")
 
 
-def generate_one(client, model: str, settings: dict, topics: dict, titles: list[str]) -> str | None:
-    """記事を1本生成して保存し、タイトルを返す。トピックが無ければNone。"""
-    pending = topics.get("pending") or []
-    if not pending:
-        return None
-    topic = pending[0]
+def save_article(article: dict, settings: dict) -> Path:
+    """記事をJekyllの投稿ファイルとして保存し、パスを返す。"""
     today = datetime.datetime.now(JST).date()
-    print(f"トピック: {topic}")
-
-    article = call_claude(client, model, build_article_prompt(topic, settings, titles), ARTICLE_SCHEMA)
     slug = sanitize_slug(article["slug"], fallback=f"post-{today.strftime('%Y%m%d')}")
     post_path = POSTS_DIR / f"{today.isoformat()}-{slug}.md"
     n = 2
@@ -241,12 +234,102 @@ def generate_one(client, model: str, settings: dict, topics: dict, titles: list[
     POSTS_DIR.mkdir(exist_ok=True)
     post_path.write_text(render_post(article, settings, today), encoding="utf-8")
     print(f"記事を保存しました: {post_path.relative_to(ROOT)}")
+    return post_path
+
+
+def generate_one(client, model: str, settings: dict, topics: dict, titles: list[str]) -> str | None:
+    """トピックキューから記事を1本生成して保存し、タイトルを返す。トピックが無ければNone。"""
+    pending = topics.get("pending") or []
+    if not pending:
+        return None
+    topic = pending[0]
+    print(f"トピック: {topic}")
+
+    article = call_claude(client, model, build_article_prompt(topic, settings, titles), ARTICLE_SCHEMA)
+    save_article(article, settings)
 
     # 使い終わったトピックを done に移動し、途中で失敗しても整合するよう都度保存する
     topics["pending"] = pending[1:]
     topics.setdefault("done", []).append(topic)
     save_yaml(TOPICS_PATH, topics)
     return article["title"]
+
+
+NEWS_RESEARCH_PROMPT = """あなたは日本語のAIツール・ガジェットブログの編集者です。
+Web検索を使って、直近1週間のAI関連ニュース(新しいAIモデル・サービス・機能・ツールの発表など)を調べてください。
+
+その中から、日本の一般読者にとって最も価値があり、ブログ記事として面白い話題を1つ選び、
+記事化に必要な情報を箇条書きでまとめてください:
+
+- 何が起きたか(いつ、誰が、何を発表したか)
+- 読者にとって何が嬉しいのか・どう影響するのか
+- 重要な事実・数字(価格、提供開始日、対象ユーザーなど)
+- 出典URL(公式発表と報道記事を2〜3件)
+
+検索で確認できた事実だけをまとめ、推測で補わないでください。"""
+
+
+def build_news_article_prompt(research: str, settings: dict, titles: list[str]) -> str:
+    article = settings["article"]
+    titles_block = "\n".join(f"- {t}" for t in titles) if titles else "(まだありません)"
+    return f"""あなたは日本語のAIツール・ガジェット紹介ブログのライターです。
+以下の調査メモをもとに、最新AIニュースの解説記事を1本書いてください。
+
+# 調査メモ(事実はこの範囲内のみ使用し、推測で補わないこと)
+{research}
+
+# 文体・構成の指示
+{article['tone']}
+- 文字数は{article['min_chars']}〜{article['max_chars']}字程度。
+- 「何が起きたか」→「読者にとって何が嬉しいか」→「使い方・注意点」→「まとめ」の流れで構成する。
+- 不確かな点は断定せず「公式サイトで最新情報を確認してください」と促す。
+- 記事の最後に「参考リンク」セクションを置き、調査メモの出典URLをMarkdownリンクで載せる。
+
+# SEOの指示
+- このニュースを検索する人が使いそうなキーワードを、タイトル・最初の見出し・冒頭段落に自然に含める。
+- 冒頭の1〜2段落で「この記事を読むと何がわかるか」を明示する。
+
+# 図解の挿入
+内容の理解を助ける場合のみ、Mermaid記法(```mermaid、graph TDまたはLR、ノード8個以内、
+ラベルは記号を含まない短い日本語、ノードIDは英数字)の図解を1つ入れてください。
+
+# 既存記事(内容の重複を避けてください)
+{titles_block}
+"""
+
+
+def research_news(client, model: str) -> str:
+    """Web検索ツールで直近のAIニュースを調査し、記事の元になるメモを返す。"""
+    tools = [{"type": "web_search_20260209", "name": "web_search"}]
+    messages = [{"role": "user", "content": NEWS_RESEARCH_PROMPT}]
+    for _ in range(5):
+        response = client.messages.create(
+            model=model,
+            max_tokens=4096,
+            tools=tools,
+            messages=messages,
+        )
+        # サーバー側ツールの反復上限に達した場合は続きを再要求する
+        if response.stop_reason == "pause_turn":
+            messages.append({"role": "assistant", "content": response.content})
+            continue
+        return "\n".join(b.text for b in response.content if b.type == "text")
+    raise RuntimeError("ニュース調査が規定回数内に完了しませんでした")
+
+
+def generate_news(client, model: str, settings: dict, titles: list[str]) -> str | None:
+    """週1回のニュース解説記事を生成する。失敗したらNoneを返す(通常記事にフォールバック)。"""
+    try:
+        print("今週のAIニュースを調査しています...")
+        research = research_news(client, model)
+        article = call_claude(
+            client, model, build_news_article_prompt(research, settings, titles), ARTICLE_SCHEMA
+        )
+        save_article(article, settings)
+        return article["title"]
+    except Exception as e:  # ニュース記事の失敗で毎日の投稿を止めない
+        print(f"ニュース記事の生成に失敗したため通常記事に切り替えます: {e}", file=sys.stderr)
+        return None
 
 
 def main() -> int:
@@ -287,8 +370,23 @@ def main() -> int:
 
     client = anthropic.Anthropic()
 
+    news_cfg = settings.get("news") or {}
+    is_news_day = (
+        news_cfg.get("enabled")
+        and datetime.datetime.now(JST).weekday() == int(news_cfg.get("weekday", 0))
+    )
+
     for i in range(posts_per_day):
         print(f"--- {i + 1}/{posts_per_day} 本目 ---")
+
+        # ニュース解説の日は1本目をWeb検索付きのニュース記事にする
+        if i == 0 and is_news_day:
+            title = generate_news(client, model, settings, titles)
+            if title is not None:
+                titles.append(title)
+                continue
+            # 失敗時はそのまま通常記事にフォールバック
+
         refill_topics_if_needed(client, model, settings, topics, titles, dry_run=False)
         title = generate_one(client, model, settings, topics, titles)
         if title is None:
