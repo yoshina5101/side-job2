@@ -228,6 +228,18 @@ def main() -> int:
         print(prompt)
         return 0
 
+    import os
+
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        print(
+            "エラー: ANTHROPIC_API_KEY が設定されていません。\n"
+            "GitHubリポジトリの Settings → Secrets and variables → Actions で\n"
+            "Name: ANTHROPIC_API_KEY / Secret: APIキー(sk-ant-...) を登録してください。\n"
+            "詳しい手順は README.md の「セットアップ手順」を参照してください。",
+            file=sys.stderr,
+        )
+        return 1
+
     import anthropic  # APIキー不要のdry-runでも動くよう遅延インポート
 
     client = anthropic.Anthropic()
