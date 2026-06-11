@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ai-gadget-lab.com/sitemap.xml
+Sitemap: https://aigadget-lab.com/sitemap.xml
