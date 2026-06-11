@@ -36,7 +36,29 @@
 
 1. **Settings → Pages** を開く
 2. 「Source」を **Deploy from a branch** にし、Branch を `main` / `(root)` に設定して保存
-3. 数分後、`https://<ユーザー名>.github.io/<リポジトリ名>/` でブログが公開されます
+3. 続けて独自ドメインを接続します(次のセクションを参照)
+
+### 3.5 独自ドメインを接続する
+
+このサイトは独自ドメイン **`ai-gadget-lab.com`** で公開する設定になっています(`CNAME` ファイルと `_config.yml` に設定済み)。
+
+1. **ドメインを購入する**(年1,000〜2,000円程度)
+   - [Cloudflare Registrar](https://www.cloudflare.com/products/registrar/)(最安・原価販売)
+   - [お名前.com](https://www.onamae.com/) や [ムームードメイン](https://muumuu-domain.com/)(日本語で簡単)
+   - `ai-gadget-lab.com` が取得できない場合は `.net` や別の名前でもOK(その場合は `CNAME`・`_config.yml`・`robots.txt` の3ファイルのドメイン名を書き換えるか、Claudeに頼んでください)
+2. **DNSレコードを設定する**(購入したサービスのDNS設定画面で)
+
+   | タイプ | ホスト名 | 値 |
+   |---|---|---|
+   | A | @ | 185.199.108.153 |
+   | A | @ | 185.199.109.153 |
+   | A | @ | 185.199.110.153 |
+   | A | @ | 185.199.111.153 |
+   | CNAME | www | yoshina5101.github.io |
+
+3. **GitHubに登録する**: Settings → Pages → Custom domain に `ai-gadget-lab.com` を入力して Save
+4. DNS確認が済んだら(数分〜数時間)、同じ画面の **Enforce HTTPS** にチェックを入れる
+5. `https://ai-gadget-lab.com/` でブログが表示されれば完了です
 
 ### 4. 動作確認(手動で1記事生成してみる)
 
@@ -110,7 +132,7 @@ python scripts/generate_post.py
 
 検索結果に載るスピードが大きく変わるので、サイト公開後に必ず行ってください。
 
-1. [Google Search Console](https://search.google.com/search-console) にアクセスし、「URLプレフィックス」でサイトURL(`https://yoshina5101.github.io/side-job2/`)を登録
+1. [Google Search Console](https://search.google.com/search-console) にアクセスし、「URLプレフィックス」でサイトURL(`https://ai-gadget-lab.com/`)を登録
 2. 所有権の確認は「HTMLタグ」方式を選び、表示されたメタタグの `content` の値をコピー
 3. `_config.yml` に次の1行を追加してコミット(jekyll-seo-tagが自動でタグを出力します)
    ```yaml
@@ -120,7 +142,7 @@ python scripts/generate_post.py
 
 ### 知っておいてほしいこと
 
-- **独自ドメインの検討**: `xxx.github.io` のままでも運用できますが、長期的に育てるなら独自ドメイン(年1,500円程度)の方がSEO上の資産になります。導入する場合は `_config.yml` の `url` を変更してください。
+- **独自ドメイン**: `ai-gadget-lab.com` で運用する設定になっています(接続手順はセットアップ手順 3.5 を参照)。長期的なSEO資産になります。
 - **AI生成コンテンツについて**: Googleは「AI生成かどうか」ではなく「読者に役立つか」で評価すると公表しています。本システムのプロンプトは検索意図への回答を重視した構成にしていますが、ときどき記事を読んで、間違いに気づいたら直す(または好調なテーマにトピックを寄せる)運用が検索評価を伸ばす近道です。
 
 ## 法律・税金に関する注意
