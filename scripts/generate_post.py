@@ -201,6 +201,34 @@ def refill_topics_if_needed(client, model: str, settings: dict, topics: dict, ti
     print(f"{len(new_topics)}本のトピックを補充しました。")
 
 
+def generate_one(client, model: str, settings: dict, topics: dict, titles: list[str]) -> str | None:
+    """記事を1本生成して保存し、タイトルを返す。トピックが無ければNone。"""
+    pending = topics.get("pending") or []
+    if not pending:
+        return None
+    topic = pending[0]
+    today = datetime.datetime.now(JST).date()
+    print(f"トピック: {topic}")
+
+    article = call_claude(client, model, build_article_prompt(topic, settings, titles), ARTICLE_SCHEMA)
+    slug = sanitize_slug(article["slug"], fallback=f"post-{today.strftime('%Y%m%d')}")
+    post_path = POSTS_DIR / f"{today.isoformat()}-{slug}.md"
+    n = 2
+    while post_path.exists():
+        post_path = POSTS_DIR / f"{today.isoformat()}-{slug}-{n}.md"
+        n += 1
+
+    POSTS_DIR.mkdir(exist_ok=True)
+    post_path.write_text(render_post(article, settings, today), encoding="utf-8")
+    print(f"記事を保存しました: {post_path.relative_to(ROOT)}")
+
+    # 使い終わったトピックを done に移動し、途中で失敗しても整合するよう都度保存する
+    topics["pending"] = pending[1:]
+    topics.setdefault("done", []).append(topic)
+    save_yaml(TOPICS_PATH, topics)
+    return article["title"]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="ブログ記事を自動生成します")
     parser.add_argument("--dry-run", action="store_true", help="APIを呼ばずプロンプトだけ表示する")
@@ -209,23 +237,18 @@ def main() -> int:
     settings = load_yaml(SETTINGS_PATH)
     topics = load_yaml(TOPICS_PATH)
     model = settings["model"]
+    posts_per_day = int(settings.get("posts_per_day", 1))
     titles = existing_post_titles()
 
-    pending = topics.get("pending") or []
-    if not pending:
-        print("エラー: トピックが空です。config/topics.yml の pending にトピックを追加してください。", file=sys.stderr)
-        return 1
-
-    topic = pending[0]
-    today = datetime.datetime.now(JST).date()
-    prompt = build_article_prompt(topic, settings, titles)
-
-    print(f"モデル: {model}")
-    print(f"トピック: {topic}")
+    print(f"モデル: {model} / 1日の投稿本数: {posts_per_day}")
 
     if args.dry_run:
-        print("\n===== 記事生成プロンプト(dry-run) =====\n")
-        print(prompt)
+        pending = topics.get("pending") or []
+        if not pending:
+            print("エラー: トピックが空です。config/topics.yml の pending にトピックを追加してください。", file=sys.stderr)
+            return 1
+        print("\n===== 記事生成プロンプト(dry-run、1本目のみ表示) =====\n")
+        print(build_article_prompt(pending[0], settings, titles))
         return 0
 
     import os
@@ -244,22 +267,14 @@ def main() -> int:
 
     client = anthropic.Anthropic()
 
-    article = call_claude(client, model, prompt, ARTICLE_SCHEMA)
-    slug = sanitize_slug(article["slug"], fallback=f"post-{today.strftime('%Y%m%d')}")
-    post_path = POSTS_DIR / f"{today.isoformat()}-{slug}.md"
-    if post_path.exists():
-        post_path = POSTS_DIR / f"{today.isoformat()}-{slug}-2.md"
-
-    POSTS_DIR.mkdir(exist_ok=True)
-    post_path.write_text(render_post(article, settings, today), encoding="utf-8")
-    print(f"記事を保存しました: {post_path.relative_to(ROOT)}")
-
-    # 使い終わったトピックを done に移動
-    topics["pending"] = pending[1:]
-    topics.setdefault("done", []).append(topic)
-
-    refill_topics_if_needed(client, model, settings, topics, titles + [article["title"]], args.dry_run)
-    save_yaml(TOPICS_PATH, topics)
+    for i in range(posts_per_day):
+        print(f"--- {i + 1}/{posts_per_day} 本目 ---")
+        refill_topics_if_needed(client, model, settings, topics, titles, dry_run=False)
+        title = generate_one(client, model, settings, topics, titles)
+        if title is None:
+            print("エラー: トピックが空です。config/topics.yml の pending にトピックを追加してください。", file=sys.stderr)
+            return 1
+        titles.append(title)
     return 0
 
 

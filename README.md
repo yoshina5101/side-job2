@@ -71,6 +71,7 @@
 
 | やりたいこと | 編集するファイル |
 |---|---|
+| **1日の投稿本数を変える** | `config/settings.yml` の `posts_per_day`(コスト目安もファイル内に記載) |
 | 記事のトピックを追加・変更する | `config/topics.yml` の `pending` に追記 |
 | AIモデルを変更してコストを下げる | `config/settings.yml` の `model`(`claude-haiku-4-5` で約1/5のコスト) |
 | 文体・文字数を変える | `config/settings.yml` の `article` |
