@@ -3,6 +3,7 @@ layout: post
 title: "ChatGPTとClaudeとGeminiを徹底比較!初心者におすすめのAIチャットはどれ?"
 description: "三大AIチャット(ChatGPT・Claude・Gemini)の特徴と料金を初心者向けにわかりやすく比較。目的別のおすすめも紹介します。"
 date: 2026-06-09
+category: AIツール
 tags: ["AIツール", "比較", "初心者向け"]
 ---
 

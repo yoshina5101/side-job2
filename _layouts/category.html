@@ -1,0 +1,25 @@
+---
+layout: default
+---
+
+<div class="home">
+
+  <section class="site-hero">
+    <h1>{{ page.title | escape }}</h1>
+    <p>{{ page.description | escape }}</p>
+  </section>
+
+  {% include category-nav.html active=page.title %}
+
+  {%- assign cat_posts = site.categories[page.title] -%}
+  {%- if cat_posts and cat_posts.size > 0 -%}
+  <ul class="card-list">
+    {%- for post in cat_posts -%}
+    {% include post-card.html post=post %}
+    {%- endfor -%}
+  </ul>
+  {%- else -%}
+  <p class="empty-note">このカテゴリーの記事はまだありません。毎朝の自動投稿をお楽しみに!</p>
+  {%- endif -%}
+
+</div>

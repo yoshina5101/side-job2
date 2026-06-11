@@ -1,0 +1,7 @@
+<nav class="category-nav" aria-label="カテゴリー">
+  <a class="category-chip{% if include.active == nil %} is-active{% endif %}" href="{{ "/" | relative_url }}">すべて</a>
+  {%- for cat in site.data.categories -%}
+  {%- capture cat_url %}/category/{{ cat.slug }}/{% endcapture -%}
+  <a class="category-chip{% if include.active == cat.name %} is-active{% endif %}" href="{{ cat_url | relative_url }}">{{ cat.name }}</a>
+  {%- endfor -%}
+</nav>

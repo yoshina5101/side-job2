@@ -3,6 +3,7 @@ layout: post
 title: "AI翻訳ツール比較|DeepL・Google翻訳・ChatGPTどれが正確?"
 description: "AI翻訳ツールを比較したい方へ。DeepL・Google翻訳・ChatGPTの正確さや使い分けを初心者向けに解説。無料で使えるかや選び方もわかります。"
 date: 2026-06-11
+category: AIツール
 tags: ["AI翻訳", "DeepL", "ChatGPT", "ツール比較"]
 ---
 

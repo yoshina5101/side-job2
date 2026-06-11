@@ -9,6 +9,11 @@ layout: default
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {{ page.date | date: "%Y年%m月%d日" }}
       </time>
+      {%- assign cat = site.data.categories | where: "name", page.category | first -%}
+      {%- if cat -%}
+      {%- capture cat_url %}/category/{{ cat.slug }}/{% endcapture -%}
+      <a class="post-cat" href="{{ cat_url | relative_url }}">{{ cat.name }}</a>
+      {%- endif -%}
       {%- if page.tags.size > 0 -%}
       <span class="post-tags">
         {%- for tag in page.tags -%}<span class="tag">{{ tag | escape }}</span>{%- endfor -%}

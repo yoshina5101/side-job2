@@ -1,0 +1,19 @@
+# サイトの固定カテゴリー定義
+# ここを変更すると、トップのカテゴリーナビ・カテゴリーページ・記事生成時の分類に反映されます。
+# 追加する場合は category/ フォルダに対応するページ(<slug>.md)も作成してください。
+
+- name: AIツール
+  slug: ai-tools
+  description: ChatGPT・Claude・画像生成AIなど、AIサービスの使い方と比較
+- name: ガジェット
+  slug: gadgets
+  description: PC・周辺機器・スマート家電のレビューと選び方
+- name: 仕事効率化
+  slug: productivity
+  description: 業務を時短するツールの活用法とテクニック
+- name: 学習・スキルアップ
+  slug: learning
+  description: AI時代の学習法・語学・プログラミング
+- name: 暮らし・お金
+  slug: life-money
+  description: 節約・家計管理・暮らしに役立つテック活用

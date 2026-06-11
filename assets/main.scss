@@ -101,6 +101,77 @@ body {
   margin-bottom: 0;
 }
 
+/* カテゴリーナビ(チップ) */
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.category-chip, .category-chip:visited {
+  font-size: 0.82em;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.category-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.category-chip.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.card__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card__cat {
+  font-size: 0.72em;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0 8px;
+  line-height: 1.7;
+}
+
+.post-cat, .post-cat:visited {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 1px 9px;
+  margin-left: 10px;
+  text-decoration: none;
+}
+
+.post-cat:hover {
+  background: var(--accent-soft);
+  text-decoration: none;
+}
+
+.empty-note {
+  text-align: center;
+  color: var(--text-sub);
+  padding: 30px 0;
+}
+
 /* トップページ:記事カード */
 .card-list {
   list-style: none;

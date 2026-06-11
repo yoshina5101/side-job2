@@ -25,10 +25,18 @@ ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = ROOT / "_posts"
 SETTINGS_PATH = ROOT / "config" / "settings.yml"
 TOPICS_PATH = ROOT / "config" / "topics.yml"
+CATEGORIES_PATH = ROOT / "_data" / "categories.yml"
 
 JST = datetime.timezone(datetime.timedelta(hours=9))
 
 PR_NOTICE = "※本記事はアフィリエイト広告(PR)を含みます。"
+
+def load_category_names() -> list[str]:
+    with open(CATEGORIES_PATH, encoding="utf-8") as f:
+        return [c["name"] for c in yaml.safe_load(f)]
+
+
+CATEGORY_NAMES = load_category_names()
 
 ARTICLE_SCHEMA = {
     "type": "object",
@@ -36,10 +44,11 @@ ARTICLE_SCHEMA = {
         "title": {"type": "string", "description": "記事タイトル(28〜35文字。狙う検索キーワードを先頭寄りに含める)"},
         "slug": {"type": "string", "description": "URL用スラッグ。英小文字・数字・ハイフンのみ、内容を表す英単語2〜4語(例: ai-chat-comparison)"},
         "description": {"type": "string", "description": "meta description用の概要(80〜110文字。検索キーワードを含め、クリックしたくなる文にする)"},
+        "category": {"type": "string", "enum": CATEGORY_NAMES, "description": "記事に最も合うカテゴリーを1つ選ぶ"},
         "tags": {"type": "array", "items": {"type": "string"}, "description": "記事タグ(2〜4個、日本語)"},
         "body": {"type": "string", "description": "Markdown形式の記事本文。タイトル(h1)は含めず、## 見出しから始める"},
     },
-    "required": ["title", "slug", "description", "tags", "body"],
+    "required": ["title", "slug", "description", "category", "tags", "body"],
     "additionalProperties": False,
 }
 
@@ -178,11 +187,15 @@ def render_post(article: dict, settings: dict, date: datetime.date) -> str:
     tags = json.dumps(article["tags"], ensure_ascii=False)
     title = article["title"].replace('"', "'")
     description = article["description"].replace('"', "'")
+    category = article.get("category") or CATEGORY_NAMES[0]
+    if category not in CATEGORY_NAMES:
+        category = CATEGORY_NAMES[0]
     return f"""---
 layout: post
 title: "{title}"
 description: "{description}"
 date: {date.isoformat()}
+category: {category}
 tags: {tags}
 ---
 

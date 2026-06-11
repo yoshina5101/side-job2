@@ -11,23 +11,12 @@ layout: default
 
   {{ content }}
 
+  {% include category-nav.html %}
+
   {%- if site.posts.size > 0 -%}
   <ul class="card-list">
     {%- for post in site.posts -%}
-    <li class="card">
-      <a class="card__link" href="{{ post.url | relative_url }}">
-        <time class="card__date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y年%m月%d日" }}</time>
-        <h2 class="card__title">{{ post.title | escape }}</h2>
-        {%- if post.description -%}
-        <p class="card__desc">{{ post.description | escape }}</p>
-        {%- endif -%}
-        {%- if post.tags.size > 0 -%}
-        <div class="card__tags">
-          {%- for tag in post.tags -%}<span class="tag">{{ tag | escape }}</span>{%- endfor -%}
-        </div>
-        {%- endif -%}
-      </a>
-    </li>
+    {% include post-card.html post=post %}
     {%- endfor -%}
   </ul>
   {%- endif -%}

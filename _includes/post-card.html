@@ -1,0 +1,19 @@
+<li class="card">
+  <a class="card__link" href="{{ include.post.url | relative_url }}">
+    <div class="card__meta">
+      <time class="card__date" datetime="{{ include.post.date | date_to_xmlschema }}">{{ include.post.date | date: "%Y年%m月%d日" }}</time>
+      {%- if include.post.category -%}
+      <span class="card__cat">{{ include.post.category | escape }}</span>
+      {%- endif -%}
+    </div>
+    <h2 class="card__title">{{ include.post.title | escape }}</h2>
+    {%- if include.post.description -%}
+    <p class="card__desc">{{ include.post.description | escape }}</p>
+    {%- endif -%}
+    {%- if include.post.tags.size > 0 -%}
+    <div class="card__tags">
+      {%- for tag in include.post.tags -%}<span class="tag">{{ tag | escape }}</span>{%- endfor -%}
+    </div>
+    {%- endif -%}
+  </a>
+</li>

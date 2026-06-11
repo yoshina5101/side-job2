@@ -11,6 +11,12 @@ baseurl: ""
 theme: minima
 permalink: /:year/:month/:day/:title/
 
+# ヘッダーに表示するページ(カテゴリーページが混ざらないよう明示)
+header_pages:
+  - about.md
+  - privacy.md
+  - contact.md
+
 # SEO関連プラグイン(GitHub Pages公式サポート)
 #   jekyll-seo-tag : meta description / OGP / Twitterカード / JSON-LD構造化データを自動出力
 #   jekyll-sitemap : sitemap.xml を自動生成(Google Search Console に登録する)
