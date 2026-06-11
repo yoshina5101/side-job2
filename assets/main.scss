@@ -23,29 +23,60 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* ヘッダー */
+/* ヘッダー(ダーク × デジタル) */
 .site-header {
-  background: var(--card-bg);
-  border-top: 4px solid var(--accent);
-  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #0c1620, #11222e);
+  border-top: 0;
+  border-bottom: 1px solid rgba(47, 214, 234, 0.35);
+  box-shadow: 0 1px 12px rgba(10, 126, 140, 0.18);
 }
 
-.site-title, .site-title:visited {
+.site-title, .site-title:visited, .site-title:hover {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-weight: 700;
-  color: var(--text);
+  color: #f2f7f9;
+  letter-spacing: 0.05em;
+  text-decoration: none;
 }
 
-.site-title::before {
-  content: "▲";
-  color: var(--accent);
-  font-size: 0.7em;
-  margin-right: 6px;
-  vertical-align: 2px;
+.logo-mark {
+  display: inline-flex;
+  filter: drop-shadow(0 0 6px rgba(47, 214, 234, 0.45));
+}
+
+.logo-ai {
+  font-weight: 800;
+  background: linear-gradient(120deg, #2fd6ea, #5ab8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-right: 1px;
 }
 
 .site-nav .page-link {
-  color: var(--text-sub);
+  color: #aebfc9;
   font-weight: 500;
+}
+
+.site-nav .page-link:hover {
+  color: #2fd6ea;
+  text-decoration: none;
+}
+
+/* モバイル時の折りたたみメニュー(白背景に戻るため文字色を調整) */
+@media screen and (max-width: 600px) {
+  .site-nav {
+    background-color: #fff;
+    border-color: var(--border);
+  }
+  .site-nav .page-link {
+    color: var(--text);
+  }
+  .site-nav .menu-icon > svg path {
+    fill: #aebfc9;
+  }
 }
 
 /* トップページ:ヒーロー */
