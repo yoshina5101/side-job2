@@ -104,7 +104,7 @@ graph TD
 
 👉 [Amazonで「Amazon Echo スマートスピーカー」を見る](https://www.amazon.co.jp/s?k=Amazon%20Echo%20%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%82%B9%E3%83%94%E3%83%BC%E3%82%AB%E3%83%BC)
 
-👉 [楽天市場で「Google Nest スマートスピーカー」を探す](https://search.rakuten.co.jp/search/mall/Google%20Nest%20%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%82%B9%E3%83%94%E3%83%BC%E3%82%AB%E3%83%BC/)
+👉 [楽天市場で「Google Nest スマートスピーカー」を探す](https://af.moshimo.com/af/c/click?a_id=5632328&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2FGoogle%2520Nest%2520%25E3%2582%25B9%25E3%2583%259E%25E3%2583%25BC%25E3%2583%2588%25E3%2582%25B9%25E3%2583%2594%25E3%2583%25BC%25E3%2582%25AB%25E3%2583%25BC%2F)
 
 なお、価格やラインナップは時期によって変わります。セール時に大きく値下がりすることもあるので、購入前に必ず公式サイトや販売ページで最新情報を確認してください。
 

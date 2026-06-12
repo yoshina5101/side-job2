@@ -67,7 +67,7 @@ Google翻訳は、多くの人がすでに一度は使ったことがあるで�
 
 海外旅行のお供には、ネット環境を確保できる海外用Wi-Fiルーターや、オフラインでも使える翻訳機があると安心です。
 
-👉 [楽天市場で「海外旅行 翻訳機」を探す](https://search.rakuten.co.jp/search/mall/%E6%B5%B7%E5%A4%96%E6%97%85%E8%A1%8C%20%E7%BF%BB%E8%A8%B3%E6%A9%9F/)
+👉 [楽天市場で「海外旅行 翻訳機」を探す](https://af.moshimo.com/af/c/click?a_id=5632328&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E6%25B5%25B7%25E5%25A4%2596%25E6%2597%2585%25E8%25A1%258C%2520%25E7%25BF%25BB%25E8%25A8%25B3%25E6%25A9%259F%2F)
 
 ## ChatGPT:ニュアンスや文脈の調整が得意
 

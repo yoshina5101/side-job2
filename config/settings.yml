@@ -42,4 +42,4 @@ affiliate:
   # もしも管理画面 → どこでもリンク → リンク先URLに楽天の適当なページを入れて作成し、
   # 生成されたURL(href="..."の中身)をそのまま貼り付けてください。
   # 設定すると、記事内の楽天リンクが自動でもしも経由(成果計測あり)になります。
-  moshimo_rakuten_link: ""
+  moshimo_rakuten_link: "//af.moshimo.com/af/c/click?a_id=5632328&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fwww.rakuten.co.jp%2F"

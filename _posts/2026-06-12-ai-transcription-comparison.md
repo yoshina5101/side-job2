@@ -112,7 +112,7 @@ OpenAIが公開している音声認識の仕組みで、精度の高さで知�
 
 手元に良いマイクがあると、オンライン会議の録音品質も上がるので一台あると便利です。
 
-👉 [楽天市場で「USBマイク 会議用」を探す](https://search.rakuten.co.jp/search/mall/USB%E3%83%9E%E3%82%A4%E3%82%AF%20%E4%BC%9A%E8%AD%B0%E7%94%A8/)
+👉 [楽天市場で「USBマイク 会議用」を探す](https://af.moshimo.com/af/c/click?a_id=5632328&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2FUSB%25E3%2583%259E%25E3%2582%25A4%25E3%2582%25AF%2520%25E4%25BC%259A%25E8%25AD%25B0%25E7%2594%25A8%2F)
 
 ### 3. はっきり・ゆっくり話す
 

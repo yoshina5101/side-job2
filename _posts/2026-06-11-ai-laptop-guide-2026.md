@@ -97,7 +97,7 @@ GPUは映像や画像の処理を得意とする部品です。**画像生成AI�
 
 👉 [Amazonで「AI PC ノートパソコン 32GB」を見る](https://www.amazon.co.jp/s?k=AI%20PC%20%E3%83%8E%E3%83%BC%E3%83%88%E3%83%91%E3%82%BD%E3%82%B3%E3%83%B3%2032GB)
 
-👉 [楽天市場で「ノートパソコン RTX 32GB」を探す](https://search.rakuten.co.jp/search/mall/%E3%83%8E%E3%83%BC%E3%83%88%E3%83%91%E3%82%BD%E3%82%B3%E3%83%B3%20RTX%2032GB/)
+👉 [楽天市場で「ノートパソコン RTX 32GB」を探す](https://af.moshimo.com/af/c/click?a_id=5632328&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E3%2583%258E%25E3%2583%25BC%25E3%2583%2588%25E3%2583%2591%25E3%2582%25BD%25E3%2582%25B3%25E3%2583%25B3%2520RTX%252032GB%2F)
 
 ## 快適さをさらに高める周辺アイテム
 
