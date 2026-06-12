@@ -156,9 +156,33 @@ def call_claude(client, model: str, prompt: str, schema: dict, max_tokens: int =
     return json.loads(text)
 
 
+def moshimo_wrap(target_url: str, template: str) -> str:
+    """もしも「どこでもリンク」のURLを流用し、リンク先(urlパラメータ)だけ差し替える。"""
+    template = template.strip()
+    if template.startswith("//"):
+        template = "https:" + template
+    base, _, query = template.partition("?")
+    encoded = urllib.parse.quote(target_url, safe="")
+    if not query:
+        return f"{base}?url={encoded}"
+    params = []
+    replaced = False
+    for pair in query.split("&"):
+        key, _, _value = pair.partition("=")
+        if key == "url":
+            params.append(f"url={encoded}")
+            replaced = True
+        else:
+            params.append(pair)
+    if not replaced:
+        params.append(f"url={encoded}")
+    return base + "?" + "&".join(params)
+
+
 def replace_affiliate_placeholders(body: str, settings: dict) -> str:
     affiliate = settings.get("affiliate") or {}
     amazon_tag = (affiliate.get("amazon_tag") or "").strip()
+    moshimo_rakuten = (affiliate.get("moshimo_rakuten_link") or "").strip()
 
     def amazon_link(m: re.Match) -> str:
         keyword = m.group(1).strip()
@@ -170,6 +194,8 @@ def replace_affiliate_placeholders(body: str, settings: dict) -> str:
     def rakuten_link(m: re.Match) -> str:
         keyword = m.group(1).strip()
         url = f"https://search.rakuten.co.jp/search/mall/{urllib.parse.quote(keyword)}/"
+        if moshimo_rakuten:
+            url = moshimo_wrap(url, moshimo_rakuten)
         return f"👉 [楽天市場で「{keyword}」を探す]({url})"
 
     body = re.sub(r"\{\{AMAZON:([^}]+)\}\}", amazon_link, body)
