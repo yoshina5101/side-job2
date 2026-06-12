@@ -361,6 +361,7 @@ def generate_news(client, model: str, settings: dict, titles: list[str]) -> str 
 def main() -> int:
     parser = argparse.ArgumentParser(description="ブログ記事を自動生成します")
     parser.add_argument("--dry-run", action="store_true", help="APIを呼ばずプロンプトだけ表示する")
+    parser.add_argument("--extra", type=int, default=0, help="1日の上限と関係なく追加でN本生成する")
     args = parser.parse_args()
 
     settings = load_yaml(SETTINGS_PATH)
@@ -396,22 +397,28 @@ def main() -> int:
 
     client = anthropic.Anthropic()
 
-    # 二重実行ガード: 遅延したcronと手動実行が重なっても、その日の本数を超えて投稿しない
-    today_str = datetime.datetime.now(JST).date().isoformat()
-    posted_today = len(list(POSTS_DIR.glob(f"{today_str}-*.md"))) if POSTS_DIR.exists() else 0
-    remaining = posts_per_day - posted_today
-    if remaining <= 0:
-        print(f"本日分({posts_per_day}本)は投稿済みのためスキップします。")
-        return 0
-    if posted_today > 0:
-        print(f"本日すでに{posted_today}本投稿済みのため、残り{remaining}本を生成します。")
+    if args.extra > 0:
+        # 追加生成モード: その日の本数制限を無視して指定本数を生成する
+        remaining = args.extra
+        is_news_day = False
+        print(f"追加生成モード: {remaining}本を生成します。")
+    else:
+        # 二重実行ガード: 遅延したcronと手動実行が重なっても、その日の本数を超えて投稿しない
+        today_str = datetime.datetime.now(JST).date().isoformat()
+        posted_today = len(list(POSTS_DIR.glob(f"{today_str}-*.md"))) if POSTS_DIR.exists() else 0
+        remaining = posts_per_day - posted_today
+        if remaining <= 0:
+            print(f"本日分({posts_per_day}本)は投稿済みのためスキップします。")
+            return 0
+        if posted_today > 0:
+            print(f"本日すでに{posted_today}本投稿済みのため、残り{remaining}本を生成します。")
 
-    news_cfg = settings.get("news") or {}
-    is_news_day = (
-        news_cfg.get("enabled")
-        and datetime.datetime.now(JST).weekday() == int(news_cfg.get("weekday", 0))
-        and posted_today == 0  # その日の最初の実行のみニュース記事を生成
-    )
+        news_cfg = settings.get("news") or {}
+        is_news_day = (
+            news_cfg.get("enabled")
+            and datetime.datetime.now(JST).weekday() == int(news_cfg.get("weekday", 0))
+            and posted_today == 0  # その日の最初の実行のみニュース記事を生成
+        )
 
     for i in range(remaining):
         print(f"--- {i + 1}/{remaining} 本目 ---")

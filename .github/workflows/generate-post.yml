@@ -7,6 +7,11 @@ on:
     # 空いている時刻にずらしている(それでも多少の遅延はGitHubの仕様)。
     - cron: "37 21 * * *"
   workflow_dispatch: # GitHubの画面から手動実行も可能
+    inputs:
+      extra:
+        description: "追加で生成する記事数(1日の上限を無視。通常実行は空欄のまま)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -27,7 +32,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: 記事を生成
-        run: python scripts/generate_post.py
+        run: |
+          if [ -n "${{ github.event.inputs.extra }}" ]; then
+            python scripts/generate_post.py --extra "${{ github.event.inputs.extra }}"
+          else
+            python scripts/generate_post.py
+          fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
