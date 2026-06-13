@@ -85,9 +85,56 @@ def existing_post_titles() -> list[str]:
     return titles
 
 
-def build_article_prompt(topic: str, settings: dict, titles: list[str]) -> str:
+def post_url_from_filename(name: str) -> str | None:
+    """ファイル名(YYYY-MM-DD-slug.md)から permalink を組み立てる。"""
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})-(.+)\.md$", name)
+    if not m:
+        return None
+    y, mo, d, slug = m.groups()
+    return f"/{y}/{mo}/{d}/{slug}/"
+
+
+def existing_posts_meta() -> list[dict]:
+    """既存記事のタイトル・URL・カテゴリーを集める(内部リンクの候補用)。"""
+    posts = []
+    if not POSTS_DIR.exists():
+        return posts
+    for post in sorted(POSTS_DIR.glob("*.md")):
+        url = post_url_from_filename(post.name)
+        if not url:
+            continue
+        text = post.read_text(encoding="utf-8")
+        title_m = re.search(r'^title:\s*["\']?(.+?)["\']?\s*$', text, re.MULTILINE)
+        cat_m = re.search(r"^category:\s*(.+?)\s*$", text, re.MULTILINE)
+        if title_m:
+            posts.append({
+                "title": title_m.group(1),
+                "url": url,
+                "category": cat_m.group(1) if cat_m else "",
+            })
+    return posts
+
+
+def internal_links_block(posts_meta: list[dict]) -> str:
+    if not posts_meta:
+        return "(まだありません)"
+    return "\n".join(f"- [{p['title']}]({p['url']}) — カテゴリー: {p['category']}" for p in posts_meta)
+
+
+INTERNAL_LINK_INSTRUCTION = """# 内部リンクの挿入(重要)
+読者の役に立つ箇所で、下の「サイト内の既存記事」のうち関連するものへのリンクを本文中に2〜3個、Markdown形式で自然に挿入してください。
+- リンク先URLは下のリストにある正確なものをそのままコピーして使う(URLを創作しない)。
+- 「詳しくは〜をご覧ください」のように、文章の流れの中で自然に差し込む。
+- 関連性の低い記事を無理にリンクしない。該当が無ければ少なくて構いません。
+
+# サイト内の既存記事(内部リンク候補・内容の重複も避ける)
+{links}
+"""
+
+
+def build_article_prompt(topic: str, settings: dict, posts_meta: list[dict]) -> str:
     article = settings["article"]
-    titles_block = "\n".join(f"- {t}" for t in titles) if titles else "(まだありません)"
+    links = internal_links_block(posts_meta)
     return f"""あなたは日本語のAIツール・ガジェット紹介ブログのライターです。
 以下のトピックについて、ブログ記事を1本書いてください。
 
@@ -122,9 +169,7 @@ def build_article_prompt(topic: str, settings: dict, titles: list[str]) -> str:
 - 構文エラーを避けるため、ノードIDは英数字(A、B、C1など)にする。
 - 図解にすると不自然な内容の記事では、無理に入れなくて構いません。
 
-# 既存記事(内容の重複を避けてください)
-{titles_block}
-"""
+{INTERNAL_LINK_INSTRUCTION.format(links=links)}"""
 
 
 def build_refill_prompt(settings: dict, titles: list[str], pending: list[str]) -> str:
@@ -263,7 +308,7 @@ def save_article(article: dict, settings: dict) -> Path:
     return post_path
 
 
-def generate_one(client, model: str, settings: dict, topics: dict, titles: list[str]) -> str | None:
+def generate_one(client, model: str, settings: dict, topics: dict, posts_meta: list[dict]) -> str | None:
     """トピックキューから記事を1本生成して保存し、タイトルを返す。トピックが無ければNone。"""
     pending = topics.get("pending") or []
     if not pending:
@@ -271,7 +316,7 @@ def generate_one(client, model: str, settings: dict, topics: dict, titles: list[
     topic = pending[0]
     print(f"トピック: {topic}")
 
-    article = call_claude(client, model, build_article_prompt(topic, settings, titles), ARTICLE_SCHEMA)
+    article = call_claude(client, model, build_article_prompt(topic, settings, posts_meta), ARTICLE_SCHEMA)
     save_article(article, settings)
 
     # 使い終わったトピックを done に移動し、途中で失敗しても整合するよう都度保存する
@@ -295,9 +340,9 @@ Web検索を使って、直近1週間のAI関連ニュース(新しいAIモデ�
 検索で確認できた事実だけをまとめ、推測で補わないでください。"""
 
 
-def build_news_article_prompt(research: str, settings: dict, titles: list[str]) -> str:
+def build_news_article_prompt(research: str, settings: dict, posts_meta: list[dict]) -> str:
     article = settings["article"]
-    titles_block = "\n".join(f"- {t}" for t in titles) if titles else "(まだありません)"
+    links = internal_links_block(posts_meta)
     return f"""あなたは日本語のAIツール・ガジェット紹介ブログのライターです。
 以下の調査メモをもとに、最新AIニュースの解説記事を1本書いてください。
 
@@ -319,9 +364,7 @@ def build_news_article_prompt(research: str, settings: dict, titles: list[str]) 
 内容の理解を助ける場合のみ、Mermaid記法(```mermaid、graph TDまたはLR、ノード8個以内、
 ラベルは記号を含まない短い日本語、ノードIDは英数字)の図解を1つ入れてください。
 
-# 既存記事(内容の重複を避けてください)
-{titles_block}
-"""
+{INTERNAL_LINK_INSTRUCTION.format(links=links)}"""
 
 
 def research_news(client, model: str) -> str:
@@ -343,13 +386,13 @@ def research_news(client, model: str) -> str:
     raise RuntimeError("ニュース調査が規定回数内に完了しませんでした")
 
 
-def generate_news(client, model: str, settings: dict, titles: list[str]) -> str | None:
+def generate_news(client, model: str, settings: dict, posts_meta: list[dict]) -> str | None:
     """週1回のニュース解説記事を生成する。失敗したらNoneを返す(通常記事にフォールバック)。"""
     try:
         print("今週のAIニュースを調査しています...")
         research = research_news(client, model)
         article = call_claude(
-            client, model, build_news_article_prompt(research, settings, titles), ARTICLE_SCHEMA
+            client, model, build_news_article_prompt(research, settings, posts_meta), ARTICLE_SCHEMA
         )
         save_article(article, settings)
         return article["title"]
@@ -369,6 +412,7 @@ def main() -> int:
     model = settings["model"]
     posts_per_day = int(settings.get("posts_per_day", 1))
     titles = existing_post_titles()
+    posts_meta = existing_posts_meta()
 
     print(f"モデル: {model} / 1日の投稿本数: {posts_per_day}")
 
@@ -378,7 +422,7 @@ def main() -> int:
             print("エラー: トピックが空です。config/topics.yml の pending にトピックを追加してください。", file=sys.stderr)
             return 1
         print("\n===== 記事生成プロンプト(dry-run、1本目のみ表示) =====\n")
-        print(build_article_prompt(pending[0], settings, titles))
+        print(build_article_prompt(pending[0], settings, posts_meta))
         return 0
 
     import os
@@ -425,18 +469,20 @@ def main() -> int:
 
         # ニュース解説の日は1本目をWeb検索付きのニュース記事にする
         if i == 0 and is_news_day:
-            title = generate_news(client, model, settings, titles)
+            title = generate_news(client, model, settings, posts_meta)
             if title is not None:
                 titles.append(title)
+                posts_meta = existing_posts_meta()  # 新記事を内部リンク候補に反映
                 continue
             # 失敗時はそのまま通常記事にフォールバック
 
         refill_topics_if_needed(client, model, settings, topics, titles, dry_run=False)
-        title = generate_one(client, model, settings, topics, titles)
+        title = generate_one(client, model, settings, topics, posts_meta)
         if title is None:
             print("エラー: トピックが空です。config/topics.yml の pending にトピックを追加してください。", file=sys.stderr)
             return 1
         titles.append(title)
+        posts_meta = existing_posts_meta()  # 新記事を内部リンク候補に反映
     return 0
 
 
