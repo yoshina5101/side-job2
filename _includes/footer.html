@@ -1,0 +1,34 @@
+<footer class="site-footer">
+  <div class="wrapper">
+
+    <div class="footer-grid">
+      <div class="footer-col footer-about">
+        <p class="footer-title"><span class="logo-ai">AI</span>ツール・ガジェットラボ</p>
+        <p class="footer-desc">{{ site.description | escape }}</p>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-heading">カテゴリー</p>
+        <ul class="footer-links">
+          {%- for cat in site.data.categories -%}
+          {%- capture cat_url %}/category/{{ cat.slug }}/{% endcapture -%}
+          <li><a href="{{ cat_url | relative_url }}">{{ cat.name }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-heading">サイト情報</p>
+        <ul class="footer-links">
+          <li><a href="{{ "/about/" | relative_url }}">このサイトについて</a></li>
+          <li><a href="{{ "/privacy/" | relative_url }}">プライバシーポリシー</a></li>
+          <li><a href="{{ "/contact/" | relative_url }}">お問い合わせ</a></li>
+          <li><a href="{{ "/feed.xml" | relative_url }}">RSSフィード</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer-copy">© {{ site.time | date: "%Y" }} {{ site.title | escape }} — 記事の作成にはAIを活用しています</p>
+
+  </div>
+</footer>
