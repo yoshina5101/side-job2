@@ -1,6 +1,29 @@
 ---
 layout: default
 ---
+{%- assign cat = site.data.categories | where: "name", page.category | first -%}
+{%- capture cat_url %}/category/{{ cat.slug }}/{% endcapture -%}
+
+<nav class="breadcrumb" aria-label="パンくずリスト">
+  <a href="{{ "/" | relative_url }}">ホーム</a>
+  {%- if cat -%}
+  <span>›</span><a href="{{ cat_url | relative_url }}">{{ cat.name }}</a>
+  {%- endif -%}
+  <span>›</span><span class="breadcrumb__current">{{ page.title | escape }}</span>
+</nav>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+{"@type":"ListItem","position":1,"name":"ホーム","item":"{{ site.url }}{{ site.baseurl }}/"}
+{%- if cat -%}
+,{"@type":"ListItem","position":2,"name":{{ cat.name | jsonify }},"item":"{{ site.url }}{{ site.baseurl }}{{ cat_url }}"}
+,{"@type":"ListItem","position":3,"name":{{ page.title | jsonify }}}
+{%- else -%}
+,{"@type":"ListItem","position":2,"name":{{ page.title | jsonify }}}
+{%- endif -%}
+]}
+</script>
+
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
@@ -9,9 +32,7 @@ layout: default
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {{ page.date | date: "%Y年%m月%d日" }}
       </time>
-      {%- assign cat = site.data.categories | where: "name", page.category | first -%}
       {%- if cat -%}
-      {%- capture cat_url %}/category/{{ cat.slug }}/{% endcapture -%}
       <a class="post-cat" href="{{ cat_url | relative_url }}">{{ cat.name }}</a>
       {%- endif -%}
       {%- if page.tags.size > 0 -%}
@@ -28,3 +49,15 @@ layout: default
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
+
+{%- assign related = site.categories[page.category] | where_exp: "p", "p.url != page.url" -%}
+{%- if related and related.size > 0 -%}
+<section class="related">
+  <h2 class="related__heading">関連記事</h2>
+  <ul class="card-list">
+    {%- for p in related limit: 4 -%}
+    {% include post-card.html post=p %}
+    {%- endfor -%}
+  </ul>
+</section>
+{%- endif -%}

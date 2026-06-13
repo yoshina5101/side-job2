@@ -29,6 +29,13 @@ plugins:
   - jekyll-sitemap
   - jekyll-feed
 
+# 全ページのデフォルトOGP画像(SNSシェア時のアイキャッチ)
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/images/ogp.png
+
 # minimaテーマの設定
 minima:
   date_format: "%Y年%m月%d日"

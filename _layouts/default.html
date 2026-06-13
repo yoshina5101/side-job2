@@ -15,6 +15,35 @@
 
     {%- include footer.html -%}
 
+    <script>
+      // 記事の見出し(h2)から「もくじ」を自動生成する
+      (function () {
+        var content = document.querySelector(".post-content");
+        if (!content) return;
+        var headings = content.querySelectorAll("h2");
+        if (headings.length < 3) return;
+        var toc = document.createElement("nav");
+        toc.className = "toc";
+        toc.setAttribute("aria-label", "もくじ");
+        var title = document.createElement("p");
+        title.className = "toc__title";
+        title.textContent = "もくじ";
+        var list = document.createElement("ol");
+        headings.forEach(function (h) {
+          if (!h.id) return;
+          var li = document.createElement("li");
+          var a = document.createElement("a");
+          a.href = "#" + h.id;
+          a.textContent = h.textContent;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+        toc.appendChild(title);
+        toc.appendChild(list);
+        content.insertBefore(toc, headings[0]);
+      })();
+    </script>
+
     <script type="module">
       // Mermaid記法のコードブロックを図解としてレンダリングする
       const blocks = document.querySelectorAll("div.language-mermaid, pre > code.language-mermaid");
