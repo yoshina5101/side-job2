@@ -23,7 +23,7 @@ news:
 # 新記事の公開時に「フック文+リプにブログURL」を自動ツイートします。
 # X APIの認証情報(GitHub Secrets)を登録したら true にしてください。
 x:
-  enabled: false
+  enabled: true
 
 # 記事の方針
 article:

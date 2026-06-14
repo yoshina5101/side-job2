@@ -1,2 +1,9 @@
 # Xに投稿済みの記事ファイル名リスト(スクリプトが自動更新します)
-posted: []
+# ※下記は X自動化の導入前に公開済みのため、告知済み扱い(ツイートしない)。
+#   テストとして 2026-06-14-conoha-ai-canvas-guide.md のみ未記録にしてあります。
+posted:
+- 2026-06-14-ai-email-writing.md
+- 2026-06-14-ai-english-apps.md
+- 2026-06-14-ai-solo-company.md
+- 2026-06-14-rental-server-for-ai-blog.md
+- 2026-06-14-standing-desk-review.md
