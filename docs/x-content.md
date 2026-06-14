@@ -99,3 +99,43 @@ Opusのさらに上、という位置づけです。
 1. 1日1〜2本でOK。継続が一番効く
 2. リンクは必ずリプに(本文に貼ると表示が伸びにくい)
 3. 反応が良かったネタの系統を増やす
+
+---
+
+## 自動投稿のセットアップ(任意)
+
+新記事の公開時に「フック文+リプにブログURL」を自動ツイートする仕組みが実装済みです
+(`scripts/post_to_x.py`、毎朝の記事生成ワークフローに統合)。
+
+> ⚠️ これは**告知の自動化**です。フォロワー獲得に効く「同ジャンルへのリプで絡む」は
+> 引き続き手動で行ってください(自動化は凍結リスクのため非対応)。
+
+### 手順
+
+1. **X開発者アカウントを登録**(無料枠)
+   - https://developer.x.com/ → 開発者アカウント申請(用途を簡単に説明)
+2. **アプリを作成し、権限を「Read and Write」に変更**
+   - User authentication settings で Read and Write を選択(これを忘れると投稿できません)
+3. **OAuth 1.0a の4つの認証情報を取得**
+   - API Key / API Key Secret / Access Token / Access Token Secret
+   - ※ Access Token は「Read and Write 権限に変更した後」に再生成すること
+4. **GitHub Secrets に登録**(Settings → Secrets and variables → Actions)
+
+   | Name | 値 |
+   |---|---|
+   | `X_API_KEY` | API Key |
+   | `X_API_SECRET` | API Key Secret |
+   | `X_ACCESS_TOKEN` | Access Token |
+   | `X_ACCESS_TOKEN_SECRET` | Access Token Secret |
+
+5. **`config/settings.yml` の `x.enabled` を `true` に変更**してコミット
+
+以降、毎朝の記事生成のあとに、その日の新記事が自動でツイートされます。
+
+### 補足
+
+- ツイート文はClaudeが記事ごとに自動生成(フック型・120字以内・末尾🔽)。
+- 投稿済みは `config/x_posted.yml` で記録され、二重投稿されません。
+- **対象はその日の新記事のみ**(過去記事を一気に投稿する事故を防止)。
+- 無料枠の月間投稿上限は変動するため、3本/日で運用する場合は上限に注意。
+- ローカル確認: `python scripts/post_to_x.py --dry-run`(投稿せずURLを表示)。

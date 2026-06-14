@@ -54,3 +54,28 @@ jobs:
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push
           fi
+
+      - name: Xに投稿(x.enabledがtrueのときのみ)
+        run: |
+          # GitHub Pagesのビルドを少し待ってからツイート(リンク先404を避ける)
+          sleep 120
+          python scripts/post_to_x.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+
+      - name: 投稿状態をコミットしてプッシュ
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/x_posted.yml
+          if git diff --cached --quiet; then
+            echo "X投稿状態に変更なし"
+          else
+            git commit -m "X投稿状態を更新: $(TZ=Asia/Tokyo date +'%Y-%m-%d')"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi

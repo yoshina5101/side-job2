@@ -95,6 +95,7 @@
 |---|---|
 | **1日の投稿本数を変える** | `config/settings.yml` の `posts_per_day`(コスト目安もファイル内に記載) |
 | 週1回のAIニュース解説記事の曜日を変える/止める | `config/settings.yml` の `news`(Web検索付きで最新ニュースを解説。失敗時は通常記事に自動切替) |
+| 新記事をXに自動投稿する | `config/settings.yml` の `x.enabled` を `true` に(X APIの設定が必要。手順は `docs/x-content.md`) |
 | 記事のトピックを追加・変更する | `config/topics.yml` の `pending` に追記 |
 | AIモデルを変更してコストを下げる | `config/settings.yml` の `model`(`claude-haiku-4-5` で約1/5のコスト) |
 | 文体・文字数を変える | `config/settings.yml` の `article` |
