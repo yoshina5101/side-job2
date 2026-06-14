@@ -50,3 +50,4 @@ exclude:
   - requirements.txt
   - README.md
   - .github/
+  - docs/
