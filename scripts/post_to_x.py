@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """新しく公開した記事をXに自動投稿するスクリプト。
 
-「メインツイート(フック文・リンクなし)+ リプライにブログURL」の形式で投稿する。
-本文にリンクを入れると表示が抑制されるため、リンクはリプに回す。
+スレッド形式で投稿する:
+  1本目: フック文 + タイトルカード画像(自動生成)
+  2本目: 記事の要点(リプ)
+  3本目: ブログURL(リプ)
+本文にリンクを入れると表示が抑制されるため、リンクは最後のツイートに回す。
 
 GitHub Actions から、記事生成・コミットの後に実行される想定。
 
     python scripts/post_to_x.py            # その日の新規記事を投稿
-    python scripts/post_to_x.py --dry-run  # 投稿せずツイート文だけ表示
+    python scripts/post_to_x.py --dry-run  # 投稿せずスレッド内容と画像生成を確認
 """
 
 import argparse
@@ -15,27 +18,39 @@ import datetime
 import os
 import re
 import sys
+import tempfile
+import textwrap
 from pathlib import Path
 
 import generate_post as g
 
 X_POSTED_PATH = g.ROOT / "config" / "x_posted.yml"
 
-TWEET_SCHEMA = {
+# 日本語フォントの候補(GitHub Actionsでは fonts-ipafont-gothic を入れる)
+FONT_CANDIDATES = [
+    "/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf",
+    "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
+    "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
+]
+
+THREAD_SCHEMA = {
     "type": "object",
     "properties": {
-        "text": {
+        "hook": {
             "type": "string",
-            "description": "Xに投稿するフック型ツイート本文。120字以内。URLは含めない。ハッシュタグは付けても1個まで。末尾は読者を本文へ誘う表現(例: 🔽)で締める。",
+            "description": "スレッド1本目。フック型の本文。100字以内。URL・ハッシュタグなし。続きを読みたくなる書き出しにする。",
+        },
+        "body": {
+            "type": "string",
+            "description": "スレッド2本目。記事の要点を2〜3個、箇条書き(・)でまとめる。120字以内。URLなし。",
         },
     },
-    "required": ["text"],
+    "required": ["hook", "body"],
     "additionalProperties": False,
 }
 
 
 def site_url() -> str:
-    """_config.yml の url を読む(末尾スラッシュなし)。"""
     text = (g.ROOT / "_config.yml").read_text(encoding="utf-8")
     m = re.search(r'^url:\s*["\']?(.+?)["\']?\s*$', text, re.MULTILINE)
     return (m.group(1) if m else "").rstrip("/")
@@ -53,8 +68,61 @@ def parse_front_matter(text: str) -> dict:
     return fm
 
 
-def build_tweet(client, model: str, title: str, description: str) -> str:
-    prompt = f"""日本語のAIツール・ガジェットブログの新着記事を告知するXツイートを1つ作ってください。
+def find_font() -> str | None:
+    for path in FONT_CANDIDATES:
+        if os.path.exists(path):
+            return path
+    return None
+
+
+def make_title_card(title: str, category: str) -> Path | None:
+    """記事タイトル入りのタイトルカード画像を生成する。フォントが無ければNone。"""
+    font_path = find_font()
+    if not font_path:
+        return None
+    from PIL import Image, ImageDraw, ImageFont
+
+    W, H = 1200, 675
+    img = Image.new("RGB", (W, H))
+    d = ImageDraw.Draw(img)
+    c1, c2 = (12, 22, 32), (17, 34, 46)
+    for y in range(H):
+        t = y / H
+        d.line([(0, y), (W, y)], fill=tuple(int(a + (b - a) * t) for a, b in zip(c1, c2)))
+    cyan, teal = (47, 214, 234), (10, 126, 140)
+    d.rectangle([0, 0, W, 7], fill=cyan)
+    d.rectangle([0, H - 7, W, H], fill=teal)
+
+    # ロゴマーク(左上)
+    lx, ly, ls = 70, 60, 92
+    d.rounded_rectangle([lx, ly, lx + ls, ly + ls], radius=20, outline=cyan, width=7)
+    d.line([(lx + 24, ly + 28), (lx + 50, ly + 46), (lx + 24, ly + 64)], fill=cyan, width=7, joint="curve")
+    d.line([(lx + 56, ly + 66), (lx + 74, ly + 66)], fill=(90, 184, 255), width=7)
+    f_brand = ImageFont.truetype(font_path, 34)
+    d.text((lx + ls + 20, ly + 26), "AIツール・ガジェットラボ", font=f_brand, fill=(174, 191, 201))
+
+    # カテゴリーバッジ
+    f_cat = ImageFont.truetype(font_path, 30)
+    if category:
+        cw = d.textlength(category, font=f_cat)
+        d.rounded_rectangle([70, 200, 70 + cw + 36, 250], radius=10, fill=teal)
+        d.text((88, 207), category, font=f_cat, fill=(255, 255, 255))
+
+    # タイトル(折り返し)
+    f_title = ImageFont.truetype(font_path, 58)
+    lines = textwrap.wrap(title, width=16)[:4]
+    y = 300
+    for line in lines:
+        d.text((70, y), line, font=f_title, fill=(242, 247, 249))
+        y += 78
+
+    out = Path(tempfile.gettempdir()) / "x_card.png"
+    img.save(out, optimize=True)
+    return out
+
+
+def build_thread(client, model: str, title: str, description: str) -> dict:
+    prompt = f"""日本語のAIツール・ガジェットブログの新着記事を告知するXスレッド(2投稿分)を作ってください。
 
 # 記事タイトル
 {title}
@@ -63,28 +131,36 @@ def build_tweet(client, model: str, title: str, description: str) -> str:
 {description}
 
 # 条件
-- 読者が「続きを読みたい」と思うフック型の本文。120字以内。
-- URLは含めない(リンクは別途リプに貼るため)。
-- ハッシュタグは付けても1個まで。絵文字は1〜2個までで自然に。
-- 末尾は本文へ誘う表現(例: 🔽 や 詳しくは↓)で締める。
-- 煽りすぎず、初心者にやさしいトーンで。"""
-    result = g.call_claude(client, model, prompt, TWEET_SCHEMA, max_tokens=1024)
-    return result["text"].strip()
+- 1本目(hook): 続きを読みたくなるフック。100字以内。URL・ハッシュタグなし。
+- 2本目(body): 記事の要点を2〜3個、箇条書き(・)で。120字以内。URLなし。
+- 煽りすぎず、初心者にやさしいトーン。絵文字は控えめに。"""
+    return g.call_claude(client, model, prompt, THREAD_SCHEMA, max_tokens=1024)
 
 
-def post_pair(text: str, url: str) -> None:
-    """メインツイート + リプにURL を投稿する。"""
+def post_thread(hook: str, body: str, url: str, image_path: Path | None) -> None:
+    """スレッド(フック+画像 → 要点 → リンク)を投稿する。"""
     import tweepy
 
-    api = tweepy.Client(
-        consumer_key=os.environ["X_API_KEY"],
-        consumer_secret=os.environ["X_API_SECRET"],
-        access_token=os.environ["X_ACCESS_TOKEN"],
-        access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"],
+    auth = tweepy.OAuth1UserHandler(
+        os.environ["X_API_KEY"], os.environ["X_API_SECRET"],
+        os.environ["X_ACCESS_TOKEN"], os.environ["X_ACCESS_TOKEN_SECRET"],
     )
-    main = api.create_tweet(text=text)
-    tweet_id = main.data["id"]
-    api.create_tweet(text=f"詳しくはこちら👇\n{url}", in_reply_to_tweet_id=tweet_id)
+    api_v1 = tweepy.API(auth)
+    client = tweepy.Client(
+        consumer_key=os.environ["X_API_KEY"], consumer_secret=os.environ["X_API_SECRET"],
+        access_token=os.environ["X_ACCESS_TOKEN"], access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"],
+    )
+
+    media_ids = None
+    if image_path and image_path.exists():
+        media = api_v1.media_upload(filename=str(image_path))
+        media_ids = [media.media_id]
+
+    t1 = client.create_tweet(text=hook, media_ids=media_ids)
+    id1 = t1.data["id"]
+    t2 = client.create_tweet(text=body, in_reply_to_tweet_id=id1)
+    id2 = t2.data["id"]
+    client.create_tweet(text=f"詳しくはこちら👇\n{url}", in_reply_to_tweet_id=id2)
 
 
 def has_credentials() -> bool:
@@ -95,8 +171,8 @@ def has_credentials() -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="新着記事をXに自動投稿します")
-    parser.add_argument("--dry-run", action="store_true", help="投稿せずツイート文を表示する")
+    parser = argparse.ArgumentParser(description="新着記事をXにスレッド投稿します")
+    parser.add_argument("--dry-run", action="store_true", help="投稿せず内容と画像生成を確認する")
     args = parser.parse_args()
 
     settings = g.load_yaml(g.SETTINGS_PATH)
@@ -108,11 +184,9 @@ def main() -> int:
     model = settings["model"]
     base = site_url()
 
-    # 投稿済みリストを読む
     state = g.load_yaml(X_POSTED_PATH) if X_POSTED_PATH.exists() else {}
     posted = state.get("posted") or []
 
-    # その日付の新規記事だけを対象にする(初回有効化で全記事を投稿しない安全策)
     today = datetime.datetime.now(g.JST).date().isoformat()
     candidates = sorted(g.POSTS_DIR.glob(f"{today}-*.md"))
     targets = [p for p in candidates if p.name not in posted]
@@ -133,20 +207,28 @@ def main() -> int:
         fm = parse_front_matter(post.read_text(encoding="utf-8"))
         title = fm.get("title", "")
         description = fm.get("description", "")
+        category = fm.get("category", "")
         url = base + g.post_url_from_filename(post.name)
         try:
+            image_path = None
+            try:
+                image_path = make_title_card(title, category)
+            except Exception as e:  # 画像生成の失敗は致命的にしない(画像なしで続行)
+                print(f"画像生成に失敗(画像なしで続行): {e}", file=sys.stderr)
+
             if args.dry_run:
                 print(f"--- {post.name} ---")
-                print(f"(dry-run: ツイート文はAPI未呼び出しのため省略)")
+                print(f"画像: {'生成OK ' + str(image_path) if image_path else 'なし(フォント未検出)'}")
                 print(f"URL: {url}\n")
                 continue
-            text = build_tweet(client, model, title, description)
-            post_pair(text, url)
+
+            thread = build_thread(client, model, title, description)
+            post_thread(thread["hook"], thread["body"], url, image_path)
             posted.append(post.name)
             state["posted"] = posted
-            g.save_yaml(X_POSTED_PATH, state)  # 1件ごとに保存し二重投稿を防ぐ
-            print(f"投稿しました: {post.name}\n  {text}")
-        except Exception as e:  # 1件の失敗で全体を止めない
+            g.save_yaml(X_POSTED_PATH, state)
+            print(f"投稿しました: {post.name}\n  {thread['hook']}")
+        except Exception as e:
             print(f"投稿に失敗しました({post.name}): {e}", file=sys.stderr)
 
     return 0
