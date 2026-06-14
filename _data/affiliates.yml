@@ -8,8 +8,11 @@ conoha_ai_canvas:
   label: "ConoHa AI Canvas の公式サイトを見る"
 
 conoha_vps:
-  url: "//af.moshimo.com/af/c/click?a_id=5634911&p_id=2540&pc_id=5631&pl_id=61325"
-  impression: "//i.moshimo.com/af/i/impression?a_id=5634911&p_id=2540&pc_id=5631&pl_id=61325"
+  # ※暫定対応: 元のバナーリンク(pl_id=61325)がリンク先404のため、
+  #   公式ページへの直リンク(計測なし)に一時変更。
+  #   ConoHa VPSの「どこでもリンク」を作成して url/impression を差し替えると計測が復活します。
+  url: "https://www.conoha.jp/vps/"
+  impression: ""
   label: "ConoHa VPS の公式サイトを見る"
 
 conoha_wing:
