@@ -1,0 +1,34 @@
+name: X投稿の下書きを作成
+
+# 手動投稿用に、記事のツイート文と画像を生成します。
+# Actionsタブから手動実行 → 実行ページの「概要」に文章、Artifactに画像が出ます。
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "最新から何記事分の下書きを作るか(通常は1)"
+        required: false
+        default: "1"
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 依存とフォントを準備
+        run: |
+          sudo apt-get update && sudo apt-get install -y fonts-ipafont-gothic
+          pip install -r requirements.txt
+      - name: 下書きを生成
+        run: python scripts/draft_x.py --count "${{ github.event.inputs.count }}"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: 画像をアップロード
+        uses: actions/upload-artifact@v4
+        with:
+          name: x-drafts
+          path: x_drafts/
+          if-no-files-found: warn
