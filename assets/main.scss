@@ -395,6 +395,32 @@ body {
   border-left: 5px solid var(--accent);
 }
 
+/* アフィリエイトCTAボタン */
+.aff-cta {
+  text-align: center;
+  margin: 1.8em 0;
+}
+
+.aff-cta a, .aff-cta a:visited {
+  display: inline-block;
+  background: linear-gradient(135deg, #0a7e8c, #2fd6ea);
+  color: #fff;
+  font-weight: 700;
+  padding: 14px 34px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(10, 126, 140, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.aff-cta a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(10, 126, 140, 0.4);
+  text-decoration: none;
+}
+
+.aff-cta a::after { content: " ›"; }
+
 /* 図解(Mermaid) */
 .mermaid {
   text-align: center;

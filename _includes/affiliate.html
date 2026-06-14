@@ -1,0 +1,5 @@
+{%- assign a = site.data.affiliates[include.key] -%}
+{%- if a -%}
+<p class="aff-cta"><a href="{{ a.url }}" target="_blank" rel="nofollow sponsored noopener">{{ include.label | default: a.label }}</a></p>
+{%- if a.impression %}<img src="{{ a.impression }}" width="1" height="1" alt="" loading="lazy" style="border:none;position:absolute;">{% endif -%}
+{%- endif -%}

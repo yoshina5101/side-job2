@@ -17,3 +17,6 @@
 - name: 暮らし・お金
   slug: life-money
   description: 節約・家計管理・暮らしに役立つテック活用
+- name: 副業・ビジネス
+  slug: business
+  description: AIで始める副業・ブログ運営・新しい働き方のヒント

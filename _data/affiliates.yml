@@ -1,0 +1,33 @@
+# もしもアフィリエイトのリンク集
+# 記事内では {% include affiliate.html key="conoha_wing" %} のように呼び出す。
+# url = クリック計測リンク、impression = 表示計測タグ(任意)
+
+conoha_ai_canvas:
+  url: "//af.moshimo.com/af/c/click?a_id=5632458&p_id=6331&pc_id=17865&pl_id=84086"
+  impression: "//i.moshimo.com/af/i/impression?a_id=5632458&p_id=6331&pc_id=17865&pl_id=84086"
+  label: "ConoHa AI Canvas の公式サイトを見る"
+
+conoha_vps:
+  url: "//af.moshimo.com/af/c/click?a_id=5634911&p_id=2540&pc_id=5631&pl_id=61325"
+  impression: "//i.moshimo.com/af/i/impression?a_id=5634911&p_id=2540&pc_id=5631&pl_id=61325"
+  label: "ConoHa VPS の公式サイトを見る"
+
+conoha_wing:
+  url: "//af.moshimo.com/af/c/click?a_id=5634912&p_id=2312&pc_id=4967&pl_id=38392"
+  impression: "//i.moshimo.com/af/i/impression?a_id=5634912&p_id=2312&pc_id=4967&pl_id=38392"
+  label: "ConoHa WING の公式サイトを見る"
+
+lolipop:
+  url: "//af.moshimo.com/af/c/click?a_id=5634913&p_id=16&pc_id=16&pl_id=58539"
+  impression: "//i.moshimo.com/af/i/impression?a_id=5634913&p_id=16&pc_id=16&pl_id=58539"
+  label: "ロリポップ！の公式サイトを見る"
+
+zapass:
+  url: "//af.moshimo.com/af/c/click?a_id=5634910&p_id=5864&pc_id=16276&pl_id=75268"
+  impression: "//i.moshimo.com/af/i/impression?a_id=5634910&p_id=5864&pc_id=16276&pl_id=75268"
+  label: "ZaPASS の無料体験セッションを見る"
+
+studio_us:
+  url: "//af.moshimo.com/af/c/click?a_id=5634909&p_id=6805&pc_id=19475&pl_id=89745"
+  impression: "//i.moshimo.com/af/i/impression?a_id=5634909&p_id=6805&pc_id=19475&pl_id=89745"
+  label: "studio US の公式サイトを見る"
