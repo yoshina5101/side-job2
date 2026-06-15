@@ -9,6 +9,9 @@ google_site_verification: "FjU4EswGh7YNHDhsCXg8xXxzVRLNOQRMhljGJ696d18"
 # Google Analytics (GA4) の測定ID
 google_analytics: "G-WLNGGHCYG2"
 
+# Google AdSense のパブリッシャーID(審査・広告配信に使用)
+google_adsense: "ca-pub-4507711789577846"
+
 # 公開URL(サイトマップ・canonical URL・OGPタグの生成に使われます)
 # 別のドメインを使う場合は url と CNAME ファイルを書き換えてください。
 url: "https://aigadget-lab.com"
