@@ -248,6 +248,21 @@ def replace_affiliate_placeholders(body: str, settings: dict) -> str:
     return body
 
 
+def escape_pipes_in_link_text(body: str) -> str:
+    """リンクのアンカーテキスト内の | をエスケープする。
+
+    記事タイトルには区切りの「|」が含まれる(例: AI動画編集ツール比較|...)。
+    これを内部リンクのテキストにそのまま使うと、GitHub Pages(kramdown+GFM)が
+    その行を表として誤認し、リンクが壊れて生のURLが本文に露出してしまう。
+    アンカーテキスト内の未エスケープの | を \\| に変換して表化を防ぐ。
+    """
+    def repl(m: re.Match) -> str:
+        text = re.sub(r"(?<!\\)\|", r"\\|", m.group(1))
+        return f"[{text}]("
+
+    return re.sub(r"\[([^\]\n]*)\]\(", repl, body)
+
+
 def sanitize_slug(slug: str, fallback: str) -> str:
     slug = re.sub(r"[^a-z0-9-]+", "-", slug.lower()).strip("-")
     return slug or fallback
@@ -255,6 +270,7 @@ def sanitize_slug(slug: str, fallback: str) -> str:
 
 def render_post(article: dict, settings: dict, date: datetime.date) -> str:
     body = replace_affiliate_placeholders(article["body"].strip(), settings)
+    body = escape_pipes_in_link_text(body)
     tags = json.dumps(article["tags"], ensure_ascii=False)
     title = article["title"].replace('"', "'")
     description = article["description"].replace('"', "'")
