@@ -109,7 +109,7 @@ Kindle・Koboどちらを選ぶにしても、機種選びでは次の3点をチ
 
 実際の端末を探すときは、以下から最新モデルをチェックしてみてください。
 
-👉 [Amazonで「Kindle 電子書籍リーダー」を見る](https://www.amazon.co.jp/s?k=Kindle%20%E9%9B%BB%E5%AD%90%E6%9B%B8%E7%B1%8D%E3%83%AA%E3%83%BC%E3%83%80%E3%83%BC)
+👉 [Amazonで「Kindle 電子書籍リーダー」を見る](https://af.moshimo.com/af/c/click?a_id=5632371&p_id=170&pc_id=185&pl_id=38594&url=https%3A%2F%2Fwww.amazon.co.jp%2Fs%3Fk%3DKindle%2520%25E9%259B%25BB%25E5%25AD%2590%25E6%259B%25B8%25E7%25B1%258D%25E3%2583%25AA%25E3%2583%25BC%25E3%2583%2580%25E3%2583%25BC)
 
 👉 [楽天市場で「Kobo 電子書籍リーダー」を探す](https://af.moshimo.com/af/c/click?a_id=5632328&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2FKobo%2520%25E9%259B%25BB%25E5%25AD%2590%25E6%259B%25B8%25E7%25B1%258D%25E3%2583%25AA%25E3%2583%25BC%25E3%2583%2580%25E3%2583%25BC%2F)
 

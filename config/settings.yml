@@ -45,7 +45,13 @@ topics:
 # 各ASPに登録したら、IDを設定してください(未設定でもリンク自体は機能します)。
 affiliate:
   # Amazonアソシエイトのトラッキング ID(例: yourname-22)
+  # ※もしも経由(下の moshimo_amazon_link)を使う場合は空のままでOK。
   amazon_tag: ""
+  # もしもアフィリエイト「どこでもリンク」のURL(Amazon用)
+  # もしも管理画面 → どこでもリンク → 提携先でAmazonを選び、リンク先に
+  # https://www.amazon.co.jp/ を入れて作成し、href="..." の中身を貼り付け。
+  # 設定すると、記事内のAmazonリンクが自動でもしも経由(成果計測あり)になります。
+  moshimo_amazon_link: "//af.moshimo.com/af/c/click?a_id=5632371&p_id=170&pc_id=185&pl_id=38594&url=https%3A%2F%2Fwww.amazon.co.jp%2F"
   # もしもアフィリエイト「どこでもリンク」のURL(楽天市場用)
   # もしも管理画面 → どこでもリンク → リンク先URLに楽天の適当なページを入れて作成し、
   # 生成されたURL(href="..."の中身)をそのまま貼り付けてください。

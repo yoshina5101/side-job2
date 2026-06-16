@@ -100,7 +100,7 @@ AIで記事は量産できますが、**そのまま出すと不正確・無個�
 
 まずは1冊、生成AIの使いこなし本で基礎を固めるのもおすすめです。
 
-👉 [Amazonで「生成AI 仕事術 本」を見る](https://www.amazon.co.jp/s?k=%E7%94%9F%E6%88%90AI%20%E4%BB%95%E4%BA%8B%E8%A1%93%20%E6%9C%AC)
+👉 [Amazonで「生成AI 仕事術 本」を見る](https://af.moshimo.com/af/c/click?a_id=5632371&p_id=170&pc_id=185&pl_id=38594&url=https%3A%2F%2Fwww.amazon.co.jp%2Fs%3Fk%3D%25E7%2594%259F%25E6%2588%2590AI%2520%25E4%25BB%2595%25E4%25BA%258B%25E8%25A1%2593%2520%25E6%259C%25AC)
 
 ## よくある質問
 

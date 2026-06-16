@@ -227,12 +227,16 @@ def moshimo_wrap(target_url: str, template: str) -> str:
 def replace_affiliate_placeholders(body: str, settings: dict) -> str:
     affiliate = settings.get("affiliate") or {}
     amazon_tag = (affiliate.get("amazon_tag") or "").strip()
+    moshimo_amazon = (affiliate.get("moshimo_amazon_link") or "").strip()
     moshimo_rakuten = (affiliate.get("moshimo_rakuten_link") or "").strip()
 
     def amazon_link(m: re.Match) -> str:
         keyword = m.group(1).strip()
         url = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(keyword)}"
-        if amazon_tag:
+        if moshimo_amazon:
+            # もしも経由(どこでもリンク)で成果計測する
+            url = moshimo_wrap(url, moshimo_amazon)
+        elif amazon_tag:
             url += f"&tag={urllib.parse.quote(amazon_tag)}"
         return f"👉 [Amazonで「{keyword}」を見る]({url})"
 

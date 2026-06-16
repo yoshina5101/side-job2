@@ -74,7 +74,7 @@ graph TD
 
 スクールの効果を最大化するには、基礎用語に慣れてから入るのが近道です。入門書を1冊読んでおくだけで、講座の吸収率が大きく変わります。
 
-👉 [Amazonで「生成AI 入門 本」を見る](https://www.amazon.co.jp/s?k=%E7%94%9F%E6%88%90AI%20%E5%85%A5%E9%96%80%20%E6%9C%AC)
+👉 [Amazonで「生成AI 入門 本」を見る](https://af.moshimo.com/af/c/click?a_id=5632371&p_id=170&pc_id=185&pl_id=38594&url=https%3A%2F%2Fwww.amazon.co.jp%2Fs%3Fk%3D%25E7%2594%259F%25E6%2588%2590AI%2520%25E5%2585%25A5%25E9%2596%2580%2520%25E6%259C%25AC)
 
 ## まとめ
 
