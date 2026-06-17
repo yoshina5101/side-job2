@@ -22,6 +22,7 @@ permalink: /:year/:month/:day/:title/
 
 # ヘッダーに表示するページ(カテゴリーページが混ざらないよう明示)
 header_pages:
+  - ai-complete-guide.md
   - about.md
   - privacy.md
   - contact.md

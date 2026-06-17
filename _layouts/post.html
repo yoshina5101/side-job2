@@ -32,6 +32,11 @@ layout: default
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {{ page.date | date: "%Y年%m月%d日" }}
       </time>
+      {%- if page.last_modified_at -%}
+      <time class="dt-updated" datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">
+        (最終更新: {{ page.last_modified_at | date: "%Y年%m月%d日" }})
+      </time>
+      {%- endif -%}
       {%- if cat -%}
       <a class="post-cat" href="{{ cat_url | relative_url }}">{{ cat.name }}</a>
       {%- endif -%}
