@@ -75,6 +75,67 @@ def find_font() -> str | None:
     return None
 
 
+# 行頭に置きたくない文字(句読点・閉じ括弧・記号)。前の行末にぶら下げる。
+_NO_LINE_START = set("、。，．・:;：；?!?！)）]｝」』》〕】｜|ー〜")
+
+
+def _char_wrap(draw, text: str, font, max_width: float) -> list[str]:
+    """文字幅ベースで折り返す。英数字・モデル名(GPT-5.6等)は途中で割らない。"""
+    import re
+
+    tokens = re.findall(r"[A-Za-z0-9][A-Za-z0-9.+\-]*|.", text)
+    lines: list[str] = []
+    cur = ""
+    for t in tokens:
+        trial = cur + t
+        if not cur or draw.textlength(trial, font=font) <= max_width:
+            cur = trial
+        elif t in _NO_LINE_START:
+            cur += t  # 行頭禁則: 前の行末にぶら下げる
+        else:
+            lines.append(cur.rstrip())
+            cur = "" if t == " " else t
+    if cur.strip():
+        lines.append(cur.rstrip())
+    return lines
+
+
+def _wrap_title(draw, title: str, font, max_width: float) -> list[str]:
+    """まずスペース(語の区切り)で折り、収まらない行だけ文字単位で折り返す。"""
+    lines: list[str] = []
+    cur = ""
+    for seg in title.split(" "):
+        cand = f"{cur} {seg}".strip() if cur else seg
+        if not cur or draw.textlength(cand, font=font) <= max_width:
+            cur = cand
+        else:
+            lines.append(cur)
+            cur = seg
+    if cur:
+        lines.append(cur)
+
+    result: list[str] = []
+    for ln in lines:
+        if draw.textlength(ln, font=font) <= max_width:
+            result.append(ln)
+        else:
+            result.extend(_char_wrap(draw, ln, font, max_width))
+    return result
+
+
+def _fit_title(draw, font_path: str, title: str, max_width: float, max_lines: int = 4):
+    """最大行数に収まる最大のフォントサイズを選び、(font, lines)を返す。"""
+    from PIL import ImageFont
+
+    for size in (58, 52, 46, 42, 38):
+        font = ImageFont.truetype(font_path, size)
+        lines = _wrap_title(draw, title, font, max_width)
+        if len(lines) <= max_lines:
+            return font, lines
+    font = ImageFont.truetype(font_path, 38)
+    return font, _wrap_title(draw, title, font, max_width)[:max_lines]
+
+
 def make_title_card(title: str, category: str) -> Path | None:
     """記事タイトル入りのタイトルカード画像を生成する。フォントが無ければNone。"""
     font_path = find_font()
@@ -108,13 +169,15 @@ def make_title_card(title: str, category: str) -> Path | None:
         d.rounded_rectangle([70, 200, 70 + cw + 36, 250], radius=10, fill=teal)
         d.text((88, 207), category, font=f_cat, fill=(255, 255, 255))
 
-    # タイトル(折り返し)
-    f_title = ImageFont.truetype(font_path, 58)
-    lines = textwrap.wrap(title, width=16)[:4]
+    # タイトル(意味の区切りを尊重し、文字幅でバランス良く折り返す)
+    title_x = 70
+    max_width = W - title_x - 70  # 左右マージン
+    f_title, lines = _fit_title(d, font_path, title, max_width, max_lines=4)
+    line_h = f_title.size + 20
     y = 300
     for line in lines:
-        d.text((70, y), line, font=f_title, fill=(242, 247, 249))
-        y += 78
+        d.text((title_x, y), line, font=f_title, fill=(242, 247, 249))
+        y += line_h
 
     out = Path(tempfile.gettempdir()) / "x_card.png"
     img.save(out, optimize=True)
