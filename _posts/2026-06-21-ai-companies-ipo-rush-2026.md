@@ -2,7 +2,7 @@
 layout: post
 title: "AI企業の上場ラッシュ|AnthropicがIPO申請、評価額140兆円規模の衝撃"
 description: "2026年、ClaudeのAnthropicがIPO(新規上場)に向けSECへ申請。評価額は約9,650億ドル(約140兆円)規模とされ、OpenAIも続く「AI上場ラッシュ」に。何が起きているのか、私たちユーザーへの影響を初心者向けに整理します。"
-date: 2026-06-20
+date: 2026-06-21
 category: AIツール
 tags: ["Anthropic", "OpenAI", "IPO", "最新情報"]
 ---
