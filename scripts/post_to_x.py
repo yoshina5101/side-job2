@@ -100,11 +100,11 @@ def _char_wrap(draw, text: str, font, max_width: float) -> list[str]:
     return lines
 
 
-def _wrap_title(draw, title: str, font, max_width: float) -> list[str]:
-    """まずスペース(語の区切り)で折り、収まらない行だけ文字単位で折り返す。"""
+def _wrap_segment(draw, text: str, font, max_width: float) -> list[str]:
+    """1行ぶんのテキストを、スペース→文字単位の順で折り返す。"""
     lines: list[str] = []
     cur = ""
-    for seg in title.split(" "):
+    for seg in text.split(" "):
         cand = f"{cur} {seg}".strip() if cur else seg
         if not cur or draw.textlength(cand, font=font) <= max_width:
             cur = cand
@@ -120,6 +120,16 @@ def _wrap_title(draw, title: str, font, max_width: float) -> list[str]:
             result.append(ln)
         else:
             result.extend(_char_wrap(draw, ln, font, max_width))
+    return result
+
+
+def _wrap_title(draw, title: str, font, max_width: float) -> list[str]:
+    """改行文字(\\n)は強制改行として尊重し、各行をさらに幅で折り返す。"""
+    result: list[str] = []
+    for hard_line in title.split("\n"):
+        if hard_line == "":
+            continue
+        result.extend(_wrap_segment(draw, hard_line, font, max_width))
     return result
 
 
