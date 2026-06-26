@@ -24,6 +24,7 @@ permalink: /:year/:month/:day/:title/
 header_pages:
   - ai-complete-guide.md
   - about.md
+  - profile.md
   - privacy.md
   - contact.md
 
