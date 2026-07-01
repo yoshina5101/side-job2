@@ -5,4 +5,30 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', '{{ site.google_analytics }}');
+
+  // アフィリエイトリンクのクリックをGA4イベントとして計測する。
+  // どの記事の・どのリンクが収益に繋がっているかを可視化するため。
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.href || '';
+    var dest = '';
+    if (href.indexOf('af.moshimo.com') !== -1) {
+      // もしも経由: 実際の遷移先(urlパラメータ)からドメインを推定
+      var m = href.match(/[?&]url=([^&]+)/);
+      var target = m ? decodeURIComponent(m[1]) : '';
+      if (target.indexOf('amazon.co.jp') !== -1) dest = 'amazon';
+      else if (target.indexOf('rakuten.co.jp') !== -1) dest = 'rakuten';
+      else dest = 'moshimo_other';
+    } else if (href.indexOf('amazon.co.jp') !== -1) {
+      dest = 'amazon_direct';
+    } else {
+      return; // アフィリンク以外は計測しない
+    }
+    gtag('event', 'affiliate_click', {
+      link_destination: dest,
+      link_text: (a.textContent || '').trim().slice(0, 80),
+      page_path: location.pathname
+    });
+  }, true);
 </script>
